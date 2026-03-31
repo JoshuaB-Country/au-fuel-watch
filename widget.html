@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AU Fuel Watch Widget</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1e293b;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      height: 155px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px 14px 10px;
+      border-radius: 10px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand { font-size: 0.7rem; font-weight: 600; color: #94a3b8; letter-spacing: 0.05em; }
+    .war-pill {
+      font-size: 0.65rem;
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.35);
+      color: #fca5a5;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+    }
+
+    .prices {
+      display: flex;
+      gap: 12px;
+    }
+    .price-block { flex: 1; }
+    .price-label { font-size: 0.62rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .price-value { font-size: 1.75rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+    .price-value.petrol { color: #f59e0b; }
+    .price-value.diesel { color: #3b82f6; }
+    .price-unit { font-size: 0.75rem; font-weight: 400; color: #94a3b8; margin-left: 1px; }
+    .price-change { font-size: 0.65rem; color: #fca5a5; margin-top: 2px; }
+
+    .bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .updated { font-size: 0.62rem; color: #475569; }
+    .link { font-size: 0.62rem; color: #64748b; text-decoration: none; }
+    .link:hover { color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <span class="brand">⛽ AU FUEL WATCH</span>
+    <span class="war-pill">⚔️ War Day <span id="warDay">—</span></span>
+  </div>
+
+  <div class="prices">
+    <div class="price-block">
+      <div class="price-label">Petrol</div>
+      <div class="price-value petrol"><span id="petrolVal">—</span><span class="price-unit">cpl</span></div>
+      <div class="price-change" id="petrolChange"></div>
+    </div>
+    <div class="price-block">
+      <div class="price-label">Diesel</div>
+      <div class="price-value diesel"><span id="dieselVal">—</span><span class="price-unit">cpl</span></div>
+      <div class="price-change" id="dieselChange"></div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <span class="updated">Updated <span id="updated">—</span></span>
+    <a class="link" href="https://aufuelwatch.com" target="_blank">aufuelwatch.com ↗</a>
+  </div>
+
+<script>
+const FALLBACK = {
+  lastUpdated: "2026-03-31",
+  warStartDate: "2026-02-28",
+  series: [
+    { date: "2026-02-24", petrol: 176, diesel: 220 },
+    { date: "2026-03-31", petrol: 251, diesel: 318 }
+  ]
+};
+
+function daysBetween(a, b) {
+  return Math.round((new Date(b) - new Date(a)) / 86400000);
+}
+function fmtDate(iso) {
+  const [,m,d] = iso.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${+d} ${months[+m-1]}`;
+}
+
+function paint(data) {
+  const latest = data.series[data.series.length - 1];
+  const preWar = data.series.find(s => s.date < data.warStartDate) || data.series[0];
+  const t = new Date().toISOString().split('T')[0];
+  const warDay = daysBetween(data.warStartDate, t) + 1;
+
+  document.getElementById('warDay').textContent     = warDay > 0 ? warDay : '—';
+  document.getElementById('petrolVal').textContent  = latest.petrol;
+  document.getElementById('dieselVal').textContent  = latest.diesel;
+  document.getElementById('petrolChange').textContent = `+${latest.petrol - preWar.petrol} cpl since war`;
+  document.getElementById('dieselChange').textContent = `+${latest.diesel - preWar.diesel} cpl since war`;
+  document.getElementById('updated').textContent    = fmtDate(data.lastUpdated);
+}
+
+(async () => {
+  paint(FALLBACK);
+  try {
+    const res = await fetch('data/prices.json?_=' + Date.now());
+    if (!res.ok) throw new Error();
+    paint(await res.json());
+  } catch {}
+})();
+</script>
+</body>
+</html>
