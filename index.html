@@ -261,7 +261,14 @@
     .tl-future { opacity: 0.6; }
 
     /* ── GST live counter card ── */
-    .gst-counter-card { border-color: rgba(74,222,128,0.25) !important; }
+    .gst-counter-card {
+      border-color: rgba(74,222,128,0.25) !important;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .gst-counter-card:hover { border-color: rgba(74,222,128,0.55) !important; background: #1a2e22; }
+    .gst-counter-card.today-mode { border-color: rgba(74,222,128,0.7) !important; background: #1a2e22; }
     .gst-counter {
       font-size: 1.45rem;
       font-weight: 700;
@@ -270,7 +277,9 @@
       line-height: 1.1;
       margin: 0.4rem 0 0.3rem;
       letter-spacing: -0.02em;
+      transition: opacity 0.15s;
     }
+    .gst-hint { color: #4ade80; opacity: 0.6; font-size: 0.7rem; }
 
     /* ── Embed modal ── */
     .embed-modal {
@@ -535,10 +544,10 @@ function renderStats(data) {
       <div class="stat-value war">+${petrolPct}<span class="stat-unit">%</span></div>
       <div class="stat-change">petrol since ${fmtDate(data.warStartDate)}</div>
     </div>
-    <div class="stat-card gst-counter-card">
-      <div class="stat-label">Extra GST Since War</div>
+    <div class="stat-card gst-counter-card" id="gstCounterCard">
+      <div class="stat-label" id="gstLabel">Extra GST Since War</div>
       <div class="gst-counter" id="gstCounter">$—</div>
-      <div class="stat-change">+$<span id="gstRate">—</span>/sec at current prices</div>
+      <div class="stat-change">+$<span id="gstRate">—</span>/sec &middot; <span class="gst-hint" id="gstHint">tap for today</span></div>
     </div>
   `;
 }
@@ -802,12 +811,45 @@ function startGSTCounter(data) {
   const startTime = Date.now();
   const startVal  = totalDollars;
 
+  // Helper: seconds elapsed since midnight AEST (UTC+10)
+  function secondsTodayAEST() {
+    const nowUTC = Date.now();
+    const aestMs = nowUTC + 10 * 3600000;
+    const midnightAEST = aestMs - (aestMs % 86400000);
+    return (nowUTC - (midnightAEST - 10 * 3600000)) / 1000;
+  }
+
   _gstInterval = setInterval(() => {
-    const el = document.getElementById('gstCounter');
+    const el    = document.getElementById('gstCounter');
+    const label = document.getElementById('gstLabel');
+    const hint  = document.getElementById('gstHint');
+    const card  = document.getElementById('gstCounterCard');
     if (!el) return;
-    const current = startVal + (Date.now() - startTime) / 1000 * perSec;
-    el.textContent = '$' + Math.floor(current).toLocaleString('en-AU');
+
+    const mode = card ? card.dataset.mode : 'war';
+    if (mode === 'today') {
+      const todayTotal = secondsTodayAEST() * perSec;
+      el.textContent    = '$' + Math.floor(todayTotal).toLocaleString('en-AU');
+      if (label) label.textContent = "Today's Extra GST";
+      if (hint)  hint.textContent  = 'tap for war total';
+    } else {
+      const current = startVal + (Date.now() - startTime) / 1000 * perSec;
+      el.textContent    = '$' + Math.floor(current).toLocaleString('en-AU');
+      if (label) label.textContent = 'Extra GST Since War';
+      if (hint)  hint.textContent  = 'tap for today';
+    }
   }, 100);
+
+  // Toggle on click/tap
+  const card = document.getElementById('gstCounterCard');
+  if (card && !card.dataset.listenerAttached) {
+    card.dataset.listenerAttached = 'true';
+    card.addEventListener('click', () => {
+      const next = card.dataset.mode === 'today' ? 'war' : 'today';
+      card.dataset.mode = next;
+      card.classList.toggle('today-mode', next === 'today');
+    });
+  }
 }
 
 // ─── Embed copy ───────────────────────────────────────────────────────────────
