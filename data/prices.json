@@ -6,21 +6,21 @@
   "exciseHalvedCpl": 26.3,
 
   "series": [
-    { "date": "2026-02-24", "petrol": 176, "diesel": 220, "note": "Pre-war baseline" },
-    { "date": "2026-02-26", "petrol": 178, "diesel": 222 },
-    { "date": "2026-02-28", "petrol": 188, "diesel": 233, "note": "Iran war begins — immediate price shock" },
-    { "date": "2026-03-02", "petrol": 199, "diesel": 246 },
-    { "date": "2026-03-05", "petrol": 210, "diesel": 259 },
-    { "date": "2026-03-08", "petrol": 219, "diesel": 268, "note": "National avg tops 200 cpl for first time" },
-    { "date": "2026-03-11", "petrol": 226, "diesel": 276 },
-    { "date": "2026-03-14", "petrol": 233, "diesel": 283 },
-    { "date": "2026-03-17", "petrol": 238, "diesel": 290 },
-    { "date": "2026-03-20", "petrol": 243, "diesel": 298 },
-    { "date": "2026-03-23", "petrol": 247, "diesel": 306 },
-    { "date": "2026-03-25", "petrol": 250, "diesel": 311, "note": "Govt announces excise halving from April 1" },
-    { "date": "2026-03-27", "petrol": 251, "diesel": 314 },
-    { "date": "2026-03-29", "petrol": 252, "diesel": 317 },
-    { "date": "2026-03-31", "petrol": 251, "diesel": 318, "note": "Excise cut takes effect tomorrow" }
+    { "date": "2026-02-24", "petrol": 176, "diesel": 220, "brent_usd": 84, "note": "Pre-war baseline" },
+    { "date": "2026-02-26", "petrol": 178, "diesel": 222, "brent_usd": 86 },
+    { "date": "2026-02-28", "petrol": 188, "diesel": 233, "brent_usd": 96, "note": "Iran war begins — immediate price shock" },
+    { "date": "2026-03-02", "petrol": 199, "diesel": 246, "brent_usd": 100 },
+    { "date": "2026-03-05", "petrol": 210, "diesel": 259, "brent_usd": 106 },
+    { "date": "2026-03-08", "petrol": 219, "diesel": 268, "brent_usd": 110, "note": "National avg tops 200 cpl for first time" },
+    { "date": "2026-03-11", "petrol": 226, "diesel": 276, "brent_usd": 113 },
+    { "date": "2026-03-14", "petrol": 233, "diesel": 283, "brent_usd": 115 },
+    { "date": "2026-03-17", "petrol": 238, "diesel": 290, "brent_usd": 116 },
+    { "date": "2026-03-20", "petrol": 243, "diesel": 298, "brent_usd": 117 },
+    { "date": "2026-03-23", "petrol": 247, "diesel": 306, "brent_usd": 118 },
+    { "date": "2026-03-25", "petrol": 250, "diesel": 311, "brent_usd": 118, "note": "Govt announces excise halving from April 1" },
+    { "date": "2026-03-27", "petrol": 251, "diesel": 314, "brent_usd": 119 },
+    { "date": "2026-03-29", "petrol": 252, "diesel": 317, "brent_usd": 119 },
+    { "date": "2026-03-31", "petrol": 251, "diesel": 318, "brent_usd": 119, "note": "Excise cut takes effect tomorrow" }
   ],
 
   "states": {

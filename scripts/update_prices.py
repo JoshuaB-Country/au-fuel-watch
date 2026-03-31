@@ -82,9 +82,11 @@ SECONDARY (use if primary sources lack today's data or for state breakdown):
 
 1. National average ULP91 (regular unleaded petrol) — cents per litre
 2. National average ULS diesel — cents per litre
-3. State/territory breakdown for all 8 jurisdictions
-4. Any significant fuel price event today (price spike, policy change, etc.)
-5. Which sources you used and whether they agreed
+3. Brent crude spot price — USD per barrel (from Reuters, Bloomberg, or
+   MarketWatch: https://www.marketwatch.com/investing/future/brent%20crude)
+4. State/territory breakdown for all 8 jurisdictions
+5. Any significant fuel price event today (price spike, policy change, etc.)
+6. Which sources you used and whether they agreed
 
 ━━━ OUTPUT FORMAT ━━━
 
@@ -95,6 +97,7 @@ trailing commas. Use this exact schema:
   "date": "{TODAY}",
   "petrol": <integer cpl — national average ULP91>,
   "diesel": <integer cpl — national average ULS diesel>,
+  "brent_usd": <number — Brent crude spot price in USD per barrel, one decimal place>,
   "note": "<one sentence about a significant price event today, or null>",
   "sources": ["<source name 1>", "<source name 2>"],
   "confidence": "high | medium | low",
@@ -238,6 +241,8 @@ def update_data_file(entry: dict) -> None:
     idx    = next((i for i, s in enumerate(series) if s["date"] == TODAY), None)
 
     new_point: dict = {"date": TODAY, "petrol": entry["petrol"], "diesel": entry["diesel"]}
+    if entry.get("brent_usd") is not None:
+        new_point["brent_usd"] = round(float(entry["brent_usd"]), 1)
     if entry.get("note"):
         new_point["note"] = entry["note"]
     if entry.get("sources"):

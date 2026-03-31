@@ -24,6 +24,7 @@
   <meta name="twitter:image"       content="https://aufuelwatch.com/social-preview.png" />
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -227,6 +228,44 @@
     .calc-result-row .value.saving { color: var(--policy); }
     .calc-divider { border: none; border-top: 1px solid var(--border); margin: 0.25rem 0; }
 
+    /* ── Brent chart header ── */
+    .brent-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.5rem; }
+    .brent-headline { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.4; }
+    .brent-headline strong { color: #fb923c; }
+    .legend-item.brent .legend-dot { background: #fb923c; }
+    .info-btn {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, color 0.15s;
+      margin-top: 0.15rem;
+    }
+    .info-btn:hover { border-color: #fb923c; color: #fb923c; }
+
+    /* ── Explanation modal ── */
+    .explain-modal-inner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      max-width: 580px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .explain-section { margin-bottom: 1.1rem; }
+    .explain-section:last-child { margin-bottom: 0; }
+    .explain-section h4 { font-size: 0.85rem; font-weight: 600; color: #fb923c; margin-bottom: 0.35rem; }
+    .explain-section p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+    .explain-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
     /* ── Timeline ── */
     .timeline { display: flex; flex-direction: column; gap: 0; }
     .tl-item { display: flex; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid rgba(51,65,85,0.4); }
@@ -369,6 +408,23 @@
       </div>
     </section>
 
+    <section class="chart-card">
+      <div class="brent-header">
+        <div>
+          <h2>Brent Crude vs Australian Pump Price</h2>
+          <p class="brent-headline" id="brentHeadline">Loading…</p>
+        </div>
+        <button class="info-btn" title="Why does this matter?" onclick="document.getElementById('brentModal').classList.remove('hidden')">?</button>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item brent"><span class="legend-dot"></span>Brent Crude (USD/bbl)</span>
+        <span class="legend-item petrol"><span class="legend-dot"></span>Petrol avg (cpl)</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="brentChart"></canvas>
+      </div>
+    </section>
+
     <div class="two-col">
       <section class="card">
         <h2>Cost Calculator</h2>
@@ -400,6 +456,41 @@
   </div>
 </footer>
 
+<!-- Brent explanation modal -->
+<div id="brentModal" class="embed-modal hidden">
+  <div class="explain-modal-inner">
+    <div class="embed-modal-header">
+      <h3>📈 Why track Brent crude?</h3>
+      <button onclick="document.getElementById('brentModal').classList.add('hidden')">✕</button>
+    </div>
+
+    <div class="explain-section">
+      <h4>What is Brent crude?</h4>
+      <p>Brent crude is the global benchmark price for oil, set daily on international commodity markets. Australia imports roughly 70% of its refined petrol — all of it priced off Brent. When Brent moves, Australian pump prices follow.</p>
+    </div>
+    <hr class="explain-divider" />
+    <div class="explain-section">
+      <h4>Why is there a lag between the two lines?</h4>
+      <p>Refineries buy crude oil weeks in advance. The fuel you pump today was purchased as raw crude 2–4 weeks ago. This creates a predictable delay: Brent rises or falls first, and bowser prices adjust 10–28 days later as pre-purchased stock is consumed and new, pricier crude enters the supply chain.</p>
+    </div>
+    <hr class="explain-divider" />
+    <div class="explain-section">
+      <h4>The "rockets and feathers" effect</h4>
+      <p>ACCC research consistently shows Australian pump prices rise faster when crude goes up ("rockets") than they fall when crude comes down ("feathers"). Retailers pass on cost increases quickly but are slower to pass on savings. The wider the gap between the two lines after a Brent fall, the more pressure on retailers to cut prices.</p>
+    </div>
+    <hr class="explain-divider" />
+    <div class="explain-section">
+      <h4>What the shaded gap tells you</h4>
+      <p>The vertical distance between the Brent line and the petrol line — after accounting for both axes — represents the transmission lag. When Brent is rising steeply but petrol hasn't fully caught up, further pump price rises are likely incoming. When Brent has eased but petrol remains elevated, consumers are being overcharged relative to crude costs.</p>
+    </div>
+    <hr class="explain-divider" />
+    <div class="explain-section">
+      <h4>War context: Strait of Hormuz</h4>
+      <p>Roughly 20% of global oil supply passes through the Strait of Hormuz daily. The 2026 Iran war directly threatens this chokepoint. Every credible threat to Hormuz shipping adds a risk premium to Brent, which flows through to every Australian petrol station within weeks — regardless of whether a tanker is actually stopped.</p>
+    </div>
+  </div>
+</div>
+
 <!-- Embed modal -->
 <div id="embedModal" class="embed-modal hidden">
   <div class="embed-modal-inner">
@@ -426,21 +517,21 @@ const FALLBACK_DATA = {
   "exciseFullCpl": 52.6,
   "exciseHalvedCpl": 26.3,
   "series": [
-    { "date": "2026-02-24", "petrol": 176, "diesel": 220, "note": "Pre-war baseline" },
-    { "date": "2026-02-26", "petrol": 178, "diesel": 222 },
-    { "date": "2026-02-28", "petrol": 188, "diesel": 233, "note": "Iran war begins — immediate price shock" },
-    { "date": "2026-03-02", "petrol": 199, "diesel": 246 },
-    { "date": "2026-03-05", "petrol": 210, "diesel": 259 },
-    { "date": "2026-03-08", "petrol": 219, "diesel": 268, "note": "National avg tops 200 cpl for first time" },
-    { "date": "2026-03-11", "petrol": 226, "diesel": 276 },
-    { "date": "2026-03-14", "petrol": 233, "diesel": 283 },
-    { "date": "2026-03-17", "petrol": 238, "diesel": 290 },
-    { "date": "2026-03-20", "petrol": 243, "diesel": 298 },
-    { "date": "2026-03-23", "petrol": 247, "diesel": 306 },
-    { "date": "2026-03-25", "petrol": 250, "diesel": 311, "note": "Govt announces excise halving from April 1" },
-    { "date": "2026-03-27", "petrol": 251, "diesel": 314 },
-    { "date": "2026-03-29", "petrol": 252, "diesel": 317 },
-    { "date": "2026-03-31", "petrol": 251, "diesel": 318, "note": "Excise cut takes effect tomorrow" }
+    { "date": "2026-02-24", "petrol": 176, "diesel": 220, "brent_usd": 84, "note": "Pre-war baseline" },
+    { "date": "2026-02-26", "petrol": 178, "diesel": 222, "brent_usd": 86 },
+    { "date": "2026-02-28", "petrol": 188, "diesel": 233, "brent_usd": 96, "note": "Iran war begins — immediate price shock" },
+    { "date": "2026-03-02", "petrol": 199, "diesel": 246, "brent_usd": 100 },
+    { "date": "2026-03-05", "petrol": 210, "diesel": 259, "brent_usd": 106 },
+    { "date": "2026-03-08", "petrol": 219, "diesel": 268, "brent_usd": 110, "note": "National avg tops 200 cpl for first time" },
+    { "date": "2026-03-11", "petrol": 226, "diesel": 276, "brent_usd": 113 },
+    { "date": "2026-03-14", "petrol": 233, "diesel": 283, "brent_usd": 115 },
+    { "date": "2026-03-17", "petrol": 238, "diesel": 290, "brent_usd": 116 },
+    { "date": "2026-03-20", "petrol": 243, "diesel": 298, "brent_usd": 117 },
+    { "date": "2026-03-23", "petrol": 247, "diesel": 306, "brent_usd": 118 },
+    { "date": "2026-03-25", "petrol": 250, "diesel": 311, "brent_usd": 118, "note": "Govt announces excise halving from April 1" },
+    { "date": "2026-03-27", "petrol": 251, "diesel": 314, "brent_usd": 119 },
+    { "date": "2026-03-29", "petrol": 252, "diesel": 317, "brent_usd": 119 },
+    { "date": "2026-03-31", "petrol": 251, "diesel": 318, "brent_usd": 119, "note": "Excise cut takes effect tomorrow" }
   ],
   "states": {
     "NSW": { "petrol": 251, "diesel": 318 },
@@ -787,6 +878,142 @@ function renderTimeline(data) {
   document.getElementById('timeline').innerHTML = items;
 }
 
+// ─── Brent crude chart ───────────────────────────────────────────────────────
+let brentChartInstance = null;
+
+function renderBrentChart(data) {
+  const pts = data.series.filter(s => s.brent_usd != null);
+  if (pts.length < 2) return;
+
+  const labels    = pts.map(s => s.date);
+  const brentData = pts.map(s => s.brent_usd);
+  const petrolData = pts.map(s => s.petrol);
+
+  // Headline copy
+  const warPts = pts.filter(s => s.date >= data.warStartDate);
+  const hl = document.getElementById('brentHeadline');
+  if (hl && warPts.length >= 2) {
+    const first  = warPts[0];
+    const latest = warPts[warPts.length - 1];
+    const bChg   = ((latest.brent_usd - first.brent_usd) / first.brent_usd * 100).toFixed(1);
+    const pChg   = ((latest.petrol    - first.petrol)    / first.petrol    * 100).toFixed(1);
+    hl.innerHTML = `Brent crude <strong>+${bChg}%</strong> since war began &nbsp;·&nbsp; Pump prices <strong>+${pChg}%</strong> — bowser lags crude by ~2 weeks`;
+  }
+
+  // War-start annotation index
+  const warIdx = labels.findIndex(d => d >= data.warStartDate);
+
+  const ctx = document.getElementById('brentChart').getContext('2d');
+  if (brentChartInstance) brentChartInstance.destroy();
+
+  brentChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Brent Crude (USD/bbl)',
+          data: brentData,
+          borderColor: '#fb923c',
+          backgroundColor: 'rgba(251,146,60,0.09)',
+          borderWidth: 2.5,
+          tension: 0.3,
+          fill: true,
+          yAxisID: 'yBrent',
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#fb923c',
+        },
+        {
+          label: 'Petrol avg (cpl)',
+          data: petrolData,
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245,158,11,0.07)',
+          borderWidth: 2.5,
+          tension: 0.3,
+          fill: true,
+          yAxisID: 'yPetrol',
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#f59e0b',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          titleColor: '#f1f5f9',
+          bodyColor: '#94a3b8',
+          borderColor: '#334155',
+          borderWidth: 1,
+          padding: 10,
+          callbacks: {
+            title: items => fmtDate(items[0].label),
+            label: item => item.datasetIndex === 0
+              ? ` Brent: $${item.parsed.y} USD/bbl`
+              : ` Petrol: ${item.parsed.y} cpl`
+          }
+        },
+        annotation: warIdx >= 0 ? {
+          annotations: {
+            warLine: {
+              type: 'line',
+              xMin: warIdx,
+              xMax: warIdx,
+              borderColor: 'rgba(239,68,68,0.75)',
+              borderWidth: 2,
+              borderDash: [5, 4],
+              label: {
+                content: '⚔ War begins',
+                display: true,
+                position: 'start',
+                yAdjust: -14,
+                color: '#fca5a5',
+                backgroundColor: 'rgba(15,23,42,0.85)',
+                borderRadius: 3,
+                padding: 4,
+                font: { size: 10, weight: '600' }
+              }
+            }
+          }
+        } : {}
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(51,65,85,0.5)' },
+          ticks: {
+            color: '#64748b',
+            maxTicksLimit: 8,
+            callback(val) { return fmtDate(this.getLabelForValue(val)); }
+          },
+          border: { color: '#334155' }
+        },
+        yBrent: {
+          type: 'linear',
+          position: 'left',
+          grid: { color: 'rgba(51,65,85,0.5)' },
+          ticks: { color: '#fb923c', callback: v => '$' + v },
+          border: { color: '#334155' },
+          title: { display: true, text: 'USD / barrel', color: '#fb923c', font: { size: 10 } }
+        },
+        yPetrol: {
+          type: 'linear',
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: { color: '#f59e0b', callback: v => v + 'c' },
+          border: { color: '#334155' },
+          title: { display: true, text: 'cents / litre', color: '#f59e0b', font: { size: 10 } }
+        }
+      }
+    }
+  });
+}
+
 // ─── GST live counter ────────────────────────────────────────────────────────
 let _gstInterval = null;
 
@@ -887,6 +1114,7 @@ function render(data) {
   renderBanner(data);
   renderStats(data);
   renderPriceChart(data);
+  renderBrentChart(data);
   renderStates(data);
   initCalculator(data);
   renderTimeline(data);
