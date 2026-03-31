@@ -520,6 +520,7 @@ function renderStats(data) {
   const petrolRise = latest.petrol - preWar.petrol;
   const dieselRise = latest.diesel - preWar.diesel;
   const petrolPct = ((petrolRise / preWar.petrol) * 100).toFixed(1);
+  const dieselPct = ((dieselRise / preWar.diesel) * 100).toFixed(1);
 
   // Extra GST = (price rise / 11) × daily consumption
   // GST is 1/11 of the GST-inclusive bowser price
@@ -539,10 +540,11 @@ function renderStats(data) {
       <div class="stat-value diesel">${latest.diesel}<span class="stat-unit">cpl</span></div>
       <div class="stat-change up">+${dieselRise} cpl since war began</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">War Price Rise</div>
-      <div class="stat-value war">+${petrolPct}<span class="stat-unit">%</span></div>
-      <div class="stat-change">petrol since ${fmtDate(data.warStartDate)}</div>
+    <div class="stat-card gst-counter-card" id="warRiseCard"
+         data-petrol-pct="${petrolPct}" data-diesel-pct="${dieselPct}" data-mode="petrol">
+      <div class="stat-label" id="warRiseLabel">War Price Rise</div>
+      <div class="stat-value war" id="warRiseValue">+${petrolPct}<span class="stat-unit">%</span></div>
+      <div class="stat-change" id="warRiseChange">petrol since ${fmtDate(data.warStartDate)} &middot; <span class="gst-hint">tap for diesel</span></div>
     </div>
     <div class="stat-card gst-counter-card" id="gstCounterCard">
       <div class="stat-label" id="gstLabel">Extra GST Since War</div>
@@ -550,6 +552,23 @@ function renderStats(data) {
       <div class="stat-change">+$<span id="gstRate">—</span>/sec &middot; <span class="gst-hint" id="gstHint">tap for today</span></div>
     </div>
   `;
+
+  // War rise toggle
+  document.getElementById('warRiseCard').addEventListener('click', () => {
+    const card   = document.getElementById('warRiseCard');
+    const val    = document.getElementById('warRiseValue');
+    const change = document.getElementById('warRiseChange');
+    const next   = card.dataset.mode === 'petrol' ? 'diesel' : 'petrol';
+    card.dataset.mode = next;
+    card.classList.toggle('today-mode', next === 'diesel');
+    if (next === 'diesel') {
+      val.innerHTML    = `+${card.dataset.dieselPct}<span class="stat-unit">%</span>`;
+      change.innerHTML = `diesel since ${fmtDate(data.warStartDate)} &middot; <span class="gst-hint">tap for petrol</span>`;
+    } else {
+      val.innerHTML    = `+${card.dataset.petrolPct}<span class="stat-unit">%</span>`;
+      change.innerHTML = `petrol since ${fmtDate(data.warStartDate)} &middot; <span class="gst-hint">tap for diesel</span>`;
+    }
+  });
 }
 
 let chartInstance = null;
