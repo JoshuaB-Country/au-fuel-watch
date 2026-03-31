@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AU Fuel Watch — Iran War Price Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f172a;
+      --surface:  #1e293b;
+      --border:   #334155;
+      --text:     #f1f5f9;
+      --muted:    #94a3b8;
+      --subtle:   #64748b;
+      --petrol:   #f59e0b;
+      --diesel:   #3b82f6;
+      --war:      #ef4444;
+      --oil:      #f97316;
+      --fuel:     #60a5fa;
+      --policy:   #4ade80;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.25rem; }
+
+    /* ── Header ── */
+    header {
+      background: #0a1020;
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 0;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+    header h1 span { color: var(--petrol); }
+    .header-sub { color: var(--muted); font-size: 0.875rem; margin-top: 0.1rem; }
+    .header-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; }
+    .war-badge {
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.4);
+      color: #fca5a5;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .last-updated { color: var(--subtle); font-size: 0.75rem; }
+
+    /* ── Excise banner ── */
+    .excise-banner {
+      background: linear-gradient(90deg, rgba(74,222,128,0.12), rgba(34,197,94,0.08));
+      border-bottom: 1px solid rgba(74,222,128,0.3);
+      padding: 0.7rem 0;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #86efac;
+    }
+    .excise-banner strong { color: #4ade80; }
+    .hidden { display: none !important; }
+
+    /* ── Main layout ── */
+    main { padding: 1.75rem 0 3rem; }
+    section + section, section + .two-col, .two-col + section { margin-top: 1.5rem; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(148,163,184,0.15);
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    /* ── Stat cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .stat-value { font-size: 2.25rem; font-weight: 700; line-height: 1; }
+    .stat-value.petrol { color: var(--petrol); }
+    .stat-value.diesel { color: var(--diesel); }
+    .stat-value.war    { color: var(--war); }
+    .stat-unit { font-size: 1rem; font-weight: 400; color: var(--muted); margin-left: 0.2rem; }
+    .stat-change { font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem; }
+    .stat-change.up { color: #fca5a5; }
+
+    /* ── Chart ── */
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+    .chart-card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .chart-legend { display: flex; gap: 1.25rem; margin-bottom: 1rem; }
+    .legend-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 0.4rem;
+    }
+    .legend-item { font-size: 0.8rem; color: var(--muted); display: flex; align-items: center; }
+    .legend-item.petrol .legend-dot { background: var(--petrol); }
+    .legend-item.diesel .legend-dot { background: var(--diesel); }
+    .chart-wrap { position: relative; height: 300px; }
+
+    /* ── Two-col layout ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── State table ── */
+    .state-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .state-table th {
+      text-align: left;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--subtle);
+      padding: 0 0 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .state-table th:not(:first-child) { text-align: right; }
+    .state-table td { padding: 0.55rem 0; border-bottom: 1px solid rgba(51,65,85,0.5); color: var(--muted); }
+    .state-table td:first-child { font-weight: 600; color: var(--text); }
+    .state-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+    .state-table td.p-val { color: var(--petrol); }
+    .state-table td.d-val { color: var(--diesel); }
+    .state-table tr:last-child td { border-bottom: none; }
+
+    /* ── Calculator ── */
+    .calc-row { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem; }
+    .calc-row label { font-size: 0.75rem; color: var(--muted); }
+    .calc-row input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      padding: 0.5rem 0.75rem;
+      width: 100%;
+      outline: none;
+    }
+    .calc-row input:focus { border-color: var(--petrol); }
+    .calc-results { margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .calc-result-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; }
+    .calc-result-row .label { color: var(--muted); }
+    .calc-result-row .value { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .calc-result-row .value.saving { color: var(--policy); }
+    .calc-divider { border: none; border-top: 1px solid var(--border); margin: 0.25rem 0; }
+
+    /* ── Timeline ── */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item { display: flex; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid rgba(51,65,85,0.4); }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-dot-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 0.2rem; }
+    .tl-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tl-dot.war    { background: var(--war); box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+    .tl-dot.oil    { background: var(--oil); box-shadow: 0 0 6px rgba(249,115,22,0.5); }
+    .tl-dot.fuel   { background: var(--fuel); box-shadow: 0 0 6px rgba(96,165,250,0.5); }
+    .tl-dot.policy { background: var(--policy); box-shadow: 0 0 6px rgba(74,222,128,0.5); }
+    .tl-content { flex: 1; }
+    .tl-date { font-size: 0.7rem; color: var(--subtle); margin-bottom: 0.15rem; font-variant-numeric: tabular-nums; }
+    .tl-text { font-size: 0.875rem; color: var(--muted); }
+    .tl-type-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    .tl-type-badge.war    { background: rgba(239,68,68,0.15);  color: #fca5a5; }
+    .tl-type-badge.oil    { background: rgba(249,115,22,0.15); color: #fdba74; }
+    .tl-type-badge.fuel   { background: rgba(96,165,250,0.15); color: #93c5fd; }
+    .tl-type-badge.policy { background: rgba(74,222,128,0.15); color: #86efac; }
+    .tl-future { opacity: 0.6; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 0;
+      font-size: 0.75rem;
+      color: var(--subtle);
+    }
+    footer p + p { margin-top: 0.3rem; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div>
+        <h1>⛽ AU <span>Fuel Watch</span></h1>
+        <p class="header-sub">Tracking Australian fuel prices during the 2026 Iran war</p>
+      </div>
+      <div class="header-meta">
+        <div class="war-badge">⚔️ War Day <span id="warDay">—</span></div>
+        <div class="last-updated">Updated <span id="lastUpdated">—</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div id="exciseBanner" class="excise-banner hidden"></div>
+
+<main>
+  <div class="container">
+
+    <section class="stats-grid" id="statsGrid"></section>
+
+    <section class="chart-card">
+      <h2>Price History Since War Began</h2>
+      <div class="chart-legend">
+        <span class="legend-item petrol"><span class="legend-dot"></span>Petrol (ULP91)</span>
+        <span class="legend-item diesel"><span class="legend-dot"></span>Diesel (ULS)</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="priceChart"></canvas>
+      </div>
+    </section>
+
+    <div class="two-col">
+      <section class="card">
+        <h2>Cost Calculator</h2>
+        <div id="calculator"></div>
+      </section>
+      <section class="card">
+        <h2>State Breakdown <span class="badge">Latest</span></h2>
+        <table class="state-table" id="stateTable"></table>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Key Events Timeline</h2>
+      <div id="timeline" class="timeline"></div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>Data sourced via AI web search from ACCC, FuelWatch WA, NRMA, RACQ, and fuel industry reports. Prices are national averages in cents per litre (cpl). Consumption figures from ABS/DCCEEW.</p>
+    <p>Last automated update: <span id="footerUpdated">—</span> · Built with Claude AI &amp; GitHub Actions</p>
+  </div>
+</footer>
+
+<script>
+// ─── Fallback data (snapshot) ───────────────────────────────────────────────
+const FALLBACK_DATA = {
+  "lastUpdated": "2026-03-31",
+  "warStartDate": "2026-02-28",
+  "exciseCutDate": "2026-04-01",
+  "exciseFullCpl": 52.6,
+  "exciseHalvedCpl": 26.3,
+  "series": [
+    { "date": "2026-02-24", "petrol": 176, "diesel": 220, "note": "Pre-war baseline" },
+    { "date": "2026-02-26", "petrol": 178, "diesel": 222 },
+    { "date": "2026-02-28", "petrol": 188, "diesel": 233, "note": "Iran war begins — immediate price shock" },
+    { "date": "2026-03-02", "petrol": 199, "diesel": 246 },
+    { "date": "2026-03-05", "petrol": 210, "diesel": 259 },
+    { "date": "2026-03-08", "petrol": 219, "diesel": 268, "note": "National avg tops 200 cpl for first time" },
+    { "date": "2026-03-11", "petrol": 226, "diesel": 276 },
+    { "date": "2026-03-14", "petrol": 233, "diesel": 283 },
+    { "date": "2026-03-17", "petrol": 238, "diesel": 290 },
+    { "date": "2026-03-20", "petrol": 243, "diesel": 298 },
+    { "date": "2026-03-23", "petrol": 247, "diesel": 306 },
+    { "date": "2026-03-25", "petrol": 250, "diesel": 311, "note": "Govt announces excise halving from April 1" },
+    { "date": "2026-03-27", "petrol": 251, "diesel": 314 },
+    { "date": "2026-03-29", "petrol": 252, "diesel": 317 },
+    { "date": "2026-03-31", "petrol": 251, "diesel": 318, "note": "Excise cut takes effect tomorrow" }
+  ],
+  "states": {
+    "NSW": { "petrol": 251, "diesel": 318 },
+    "VIC": { "petrol": 247, "diesel": 313 },
+    "QLD": { "petrol": 255, "diesel": 321 },
+    "WA":  { "petrol": 260, "diesel": 329 },
+    "SA":  { "petrol": 249, "diesel": 316 },
+    "TAS": { "petrol": 265, "diesel": 336 },
+    "NT":  { "petrol": 279, "diesel": 354 },
+    "ACT": { "petrol": 244, "diesel": 309 }
+  },
+  "timeline": [
+    { "date": "2026-02-24", "event": "Iran-Israel tensions reach critical point; US issues stark warning over Strait of Hormuz", "type": "war" },
+    { "date": "2026-02-28", "event": "Iran launches coordinated strikes — war officially begins; Hormuz threatened", "type": "war" },
+    { "date": "2026-02-28", "event": "Brent crude surges 11% to USD $96/bbl on opening of hostilities", "type": "oil" },
+    { "date": "2026-03-01", "event": "Australian bowser prices jump 10–12 cpl overnight at major city stations", "type": "fuel" },
+    { "date": "2026-03-04", "event": "Iranian navy seizes two oil tankers in the Strait of Hormuz", "type": "war" },
+    { "date": "2026-03-06", "event": "Brent crude reaches USD $104/bbl; Goldman Sachs raises forecast to $130", "type": "oil" },
+    { "date": "2026-03-08", "event": "Australian national average petrol tops 200 cpl for the first time since 2022", "type": "fuel" },
+    { "date": "2026-03-10", "event": "US and allies impose sweeping oil sanctions on Iran; exports halted", "type": "war" },
+    { "date": "2026-03-13", "event": "Brent crude hits USD $112/bbl — highest since mid-2022 energy crisis", "type": "oil" },
+    { "date": "2026-03-15", "event": "NRMA and RACQ call on federal government for emergency fuel excise suspension", "type": "policy" },
+    { "date": "2026-03-18", "event": "OPEC+ emergency meeting fails to agree on output increase; Brent holds above $110", "type": "oil" },
+    { "date": "2026-03-20", "event": "Australian government announces emergency fuel relief package review", "type": "policy" },
+    { "date": "2026-03-23", "event": "Diesel national average tops 300 cpl — trucking industry warns of supply chain impact", "type": "fuel" },
+    { "date": "2026-03-25", "event": "Federal government announces fuel excise halved (52.6 → 26.3 cpl) effective April 1", "type": "policy" },
+    { "date": "2026-03-28", "event": "Brent crude reaches USD $119/bbl as Hormuz shipping insurance costs triple", "type": "oil" },
+    { "date": "2026-04-01", "event": "Fuel excise halved — consumers to see ~26 cpl relief at the pump", "type": "policy" }
+  ],
+  "consumption": { "petrolDailyMLitres": 58, "dieselDailyMLitres": 91.8 }
+};
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+function daysBetween(a, b) {
+  return Math.round((new Date(b) - new Date(a)) / 86400000);
+}
+function fmtDate(iso) {
+  const [, m, d] = iso.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${+d} ${months[+m - 1]}`;
+}
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+
+// ─── Render functions ────────────────────────────────────────────────────────
+function renderHeader(data) {
+  const t = today();
+  const warDay = daysBetween(data.warStartDate, t) + 1;
+  document.getElementById('warDay').textContent = warDay > 0 ? warDay : '—';
+  document.getElementById('lastUpdated').textContent = fmtDate(data.lastUpdated);
+  document.getElementById('footerUpdated').textContent = data.lastUpdated;
+}
+
+function renderBanner(data) {
+  const t = today();
+  const daysUntil = daysBetween(t, data.exciseCutDate);
+  const banner = document.getElementById('exciseBanner');
+  if (daysUntil === 0) {
+    banner.classList.remove('hidden');
+    banner.innerHTML = `<strong>Today:</strong> Fuel excise halved — expect ~${data.exciseHalvedCpl.toFixed(1)} cpl price relief at the pump`;
+  } else if (daysUntil > 0 && daysUntil <= 7) {
+    banner.classList.remove('hidden');
+    banner.innerHTML = `<strong>In ${daysUntil} day${daysUntil > 1 ? 's' : ''}:</strong> Fuel excise halved — ${data.exciseHalvedCpl.toFixed(1)} cpl relief per litre from ${data.exciseCutDate}`;
+  } else if (daysUntil < 0) {
+    banner.classList.remove('hidden');
+    banner.innerHTML = `<strong>Excise relief active</strong> — fuel excise halved to ${data.exciseHalvedCpl.toFixed(1)} cpl since ${data.exciseCutDate}`;
+  }
+}
+
+function renderStats(data) {
+  const series = data.series;
+  const latest = series[series.length - 1];
+  const warFirst = series.find(s => s.date >= data.warStartDate);
+  const preWar = series.find(s => s.date < data.warStartDate) || warFirst;
+
+  const petrolRise = latest.petrol - preWar.petrol;
+  const dieselRise = latest.diesel - preWar.diesel;
+  const petrolPct = ((petrolRise / preWar.petrol) * 100).toFixed(1);
+
+  const dailyCostM = (
+    (latest.petrol / 100 * data.consumption.petrolDailyMLitres) +
+    (latest.diesel / 100 * data.consumption.dieselDailyMLitres)
+  ).toFixed(0);
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Petrol (National Avg)</div>
+      <div class="stat-value petrol">${latest.petrol}<span class="stat-unit">cpl</span></div>
+      <div class="stat-change up">+${petrolRise} cpl since war began</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Diesel (National Avg)</div>
+      <div class="stat-value diesel">${latest.diesel}<span class="stat-unit">cpl</span></div>
+      <div class="stat-change up">+${dieselRise} cpl since war began</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">War Price Rise</div>
+      <div class="stat-value war">+${petrolPct}<span class="stat-unit">%</span></div>
+      <div class="stat-change">petrol since ${fmtDate(data.warStartDate)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Daily National Spend</div>
+      <div class="stat-value">$${dailyCostM}<span class="stat-unit">M</span></div>
+      <div class="stat-change">estimated at current prices</div>
+    </div>
+  `;
+}
+
+let chartInstance = null;
+function renderPriceChart(data) {
+  const labels = data.series.map(s => s.date);
+  const petrolPts = data.series.map(s => s.petrol);
+  const dieselPts = data.series.map(s => s.diesel);
+
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Petrol (ULP91)',
+          data: petrolPts,
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245,158,11,0.08)',
+          borderWidth: 2.5,
+          tension: 0.3,
+          fill: true,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#f59e0b',
+        },
+        {
+          label: 'Diesel (ULS)',
+          data: dieselPts,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,0.08)',
+          borderWidth: 2.5,
+          tension: 0.3,
+          fill: true,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#3b82f6',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          titleColor: '#f1f5f9',
+          bodyColor: '#94a3b8',
+          borderColor: '#334155',
+          borderWidth: 1,
+          padding: 10,
+          callbacks: {
+            title: items => fmtDate(items[0].label),
+            label: item => ` ${item.dataset.label}: ${item.parsed.y} cpl`,
+            afterBody: (items) => {
+              const entry = data.series[items[0].dataIndex];
+              return entry.note ? [`\n  ${entry.note}`] : [];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(51,65,85,0.5)' },
+          ticks: {
+            color: '#64748b',
+            maxTicksLimit: 8,
+            callback(val) {
+              return fmtDate(this.getLabelForValue(val));
+            }
+          },
+          border: { color: '#334155' }
+        },
+        y: {
+          grid: { color: 'rgba(51,65,85,0.5)' },
+          ticks: { color: '#64748b', callback: v => v + 'c' },
+          border: { color: '#334155' }
+        }
+      }
+    }
+  });
+}
+
+function renderStates(data) {
+  const states = data.states;
+  const rows = Object.entries(states)
+    .map(([code, prices]) => `
+      <tr>
+        <td>${code}</td>
+        <td class="p-val">${prices.petrol}c</td>
+        <td class="d-val">${prices.diesel}c</td>
+      </tr>`)
+    .join('');
+
+  document.getElementById('stateTable').innerHTML = `
+    <thead>
+      <tr>
+        <th>State</th>
+        <th>Petrol</th>
+        <th>Diesel</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  `;
+}
+
+function initCalculator(data) {
+  const latest = data.series[data.series.length - 1];
+  const exciseSaving = data.exciseHalvedCpl;
+  const t = today();
+  const exciseCut = t >= data.exciseCutDate;
+  const currentPetrol = exciseCut ? latest.petrol - exciseSaving : latest.petrol;
+
+  document.getElementById('calculator').innerHTML = `
+    <div class="calc-row">
+      <label>Weekly kilometres driven</label>
+      <input type="number" id="calcKm" value="250" min="0" max="2000" />
+    </div>
+    <div class="calc-row">
+      <label>Fuel efficiency (L per 100 km)</label>
+      <input type="number" id="calcEff" value="10" min="3" max="30" step="0.1" />
+    </div>
+    <div class="calc-results" id="calcResults"></div>
+  `;
+
+  function update() {
+    const km = parseFloat(document.getElementById('calcKm').value) || 0;
+    const eff = parseFloat(document.getElementById('calcEff').value) || 10;
+    const litresPerWeek = km * eff / 100;
+    const weeklyCostCurrent = (litresPerWeek * currentPetrol / 100);
+    const weeklyCostPreWar = (litresPerWeek * (latest.petrol - (latest.petrol - 176)) / 100); // using pre-war ~176
+    const preWarEntry = data.series.find(s => s.date < data.warStartDate);
+    const preWarPrice = preWarEntry ? preWarEntry.petrol : 176;
+    const weeklyCostPreWarCalc = (litresPerWeek * preWarPrice / 100);
+    const weeklyWarCost = weeklyCostCurrent - weeklyCostPreWarCalc;
+    const exciseSavingWeekly = litresPerWeek * exciseSaving / 100;
+
+    document.getElementById('calcResults').innerHTML = `
+      <div class="calc-result-row">
+        <span class="label">Litres per week</span>
+        <span class="value">${litresPerWeek.toFixed(1)} L</span>
+      </div>
+      <div class="calc-result-row">
+        <span class="label">Weekly cost (current price)</span>
+        <span class="value">$${weeklyCostCurrent.toFixed(2)}</span>
+      </div>
+      <div class="calc-result-row">
+        <span class="label">Monthly cost</span>
+        <span class="value">$${(weeklyCostCurrent * 52 / 12).toFixed(2)}</span>
+      </div>
+      <hr class="calc-divider" />
+      <div class="calc-result-row">
+        <span class="label">Extra cost vs pre-war prices</span>
+        <span class="value up" style="color:#fca5a5">+$${weeklyWarCost.toFixed(2)}/wk</span>
+      </div>
+      ${!exciseCut ? `
+      <div class="calc-result-row">
+        <span class="label">Saving from excise cut (Apr 1)</span>
+        <span class="value saving">−$${exciseSavingWeekly.toFixed(2)}/wk</span>
+      </div>` : `
+      <div class="calc-result-row">
+        <span class="label">Excise cut saving (active)</span>
+        <span class="value saving">−$${exciseSavingWeekly.toFixed(2)}/wk</span>
+      </div>`}
+    `;
+  }
+
+  document.getElementById('calcKm').addEventListener('input', update);
+  document.getElementById('calcEff').addEventListener('input', update);
+  update();
+}
+
+function renderTimeline(data) {
+  const t = today();
+  const sorted = [...data.timeline].sort((a, b) => b.date.localeCompare(a.date));
+  const items = sorted.map(ev => {
+    const isFuture = ev.date > t;
+    return `
+      <div class="tl-item${isFuture ? ' tl-future' : ''}">
+        <div class="tl-dot-wrap">
+          <div class="tl-dot ${ev.type}"></div>
+        </div>
+        <div class="tl-content">
+          <div class="tl-date">${fmtDate(ev.date)} ${isFuture ? '(upcoming)' : ''}</div>
+          <div class="tl-text">
+            <span class="tl-type-badge ${ev.type}">${ev.type}</span>${ev.event}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('timeline').innerHTML = items;
+}
+
+// ─── Bootstrap ───────────────────────────────────────────────────────────────
+async function init() {
+  let data;
+  try {
+    const res = await fetch('data/prices.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    data = await res.json();
+  } catch {
+    data = FALLBACK_DATA;
+  }
+
+  renderHeader(data);
+  renderBanner(data);
+  renderStats(data);
+  renderPriceChart(data);
+  renderStates(data);
+  initCalculator(data);
+  renderTimeline(data);
+}
+
+init();
+</script>
+</body>
+</html>
