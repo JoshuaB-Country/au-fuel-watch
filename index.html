@@ -399,10 +399,12 @@ function renderStats(data) {
   const dieselRise = latest.diesel - preWar.diesel;
   const petrolPct = ((petrolRise / preWar.petrol) * 100).toFixed(1);
 
-  const dailyCostM = (
-    (latest.petrol / 100 * data.consumption.petrolDailyMLitres) +
-    (latest.diesel / 100 * data.consumption.dieselDailyMLitres)
-  ).toFixed(0);
+  // Extra GST = (price rise / 11) × daily consumption
+  // GST is 1/11 of the GST-inclusive bowser price
+  const extraGSTM = (
+    ((latest.petrol - preWar.petrol) / 11 / 100 * data.consumption.petrolDailyMLitres) +
+    ((latest.diesel - preWar.diesel) / 11 / 100 * data.consumption.dieselDailyMLitres)
+  ).toFixed(1);
 
   document.getElementById('statsGrid').innerHTML = `
     <div class="stat-card">
@@ -421,9 +423,9 @@ function renderStats(data) {
       <div class="stat-change">petrol since ${fmtDate(data.warStartDate)}</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Daily National Spend</div>
-      <div class="stat-value">$${dailyCostM}<span class="stat-unit">M</span></div>
-      <div class="stat-change">estimated at current prices</div>
+      <div class="stat-label">Extra GST Revenue</div>
+      <div class="stat-value">$${extraGSTM}<span class="stat-unit">M/day</span></div>
+      <div class="stat-change">govt windfall from war prices</div>
     </div>
   `;
 }
