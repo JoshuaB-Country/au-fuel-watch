@@ -128,7 +128,7 @@
       gap: 1rem;
     }
     @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } }
+    /* Always keep 2×2 — never collapse to single column */
 
     .stat-card {
       background: var(--surface);
@@ -166,8 +166,26 @@
     .chart-wrap { position: relative; height: 300px; }
 
     /* ── Two-col layout ── */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: stretch; }
+    .two-col > .card { display: flex; flex-direction: column; }
     @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── Fuel type toggle ── */
+    .fuel-toggle { display: flex; gap: 0.5rem; }
+    .fuel-btn {
+      flex: 1;
+      padding: 0.45rem 0;
+      border-radius: 0.375rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .fuel-btn.active-petrol { border-color: var(--petrol); background: rgba(245,158,11,0.12); color: var(--petrol); }
+    .fuel-btn.active-diesel { border-color: var(--diesel); background: rgba(59,130,246,0.12); color: var(--diesel); }
 
     /* ── State table ── */
     .state-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
@@ -559,12 +577,21 @@ function renderStates(data) {
 
 function initCalculator(data) {
   const latest = data.series[data.series.length - 1];
+  const preWarEntry = data.series.find(s => s.date < data.warStartDate);
   const exciseSaving = data.exciseHalvedCpl;
   const t = today();
   const exciseCut = t >= data.exciseCutDate;
-  const currentPetrol = exciseCut ? latest.petrol - exciseSaving : latest.petrol;
+
+  let fuelType = 'petrol'; // default
 
   document.getElementById('calculator').innerHTML = `
+    <div class="calc-row">
+      <label>Fuel type</label>
+      <div class="fuel-toggle">
+        <button class="fuel-btn active-petrol" id="btnPetrol" data-fuel="petrol">⛽ Petrol</button>
+        <button class="fuel-btn" id="btnDiesel" data-fuel="diesel">🚛 Diesel</button>
+      </div>
+    </div>
     <div class="calc-row">
       <label>Weekly kilometres driven</label>
       <input type="number" id="calcKm" value="250" min="0" max="2000" />
@@ -577,15 +604,19 @@ function initCalculator(data) {
   `;
 
   function update() {
-    const km = parseFloat(document.getElementById('calcKm').value) || 0;
+    const km  = parseFloat(document.getElementById('calcKm').value)  || 0;
     const eff = parseFloat(document.getElementById('calcEff').value) || 10;
     const litresPerWeek = km * eff / 100;
-    const weeklyCostCurrent = (litresPerWeek * currentPetrol / 100);
-    const weeklyCostPreWar = (litresPerWeek * (latest.petrol - (latest.petrol - 176)) / 100); // using pre-war ~176
-    const preWarEntry = data.series.find(s => s.date < data.warStartDate);
-    const preWarPrice = preWarEntry ? preWarEntry.petrol : 176;
-    const weeklyCostPreWarCalc = (litresPerWeek * preWarPrice / 100);
-    const weeklyWarCost = weeklyCostCurrent - weeklyCostPreWarCalc;
+
+    const isPetrol = fuelType === 'petrol';
+    const rawPrice   = isPetrol ? latest.petrol : latest.diesel;
+    const preWarPrice = isPetrol
+      ? (preWarEntry ? preWarEntry.petrol : 176)
+      : (preWarEntry ? preWarEntry.diesel : 220);
+    const currentPrice = exciseCut ? rawPrice - exciseSaving : rawPrice;
+
+    const weeklyCost    = litresPerWeek * currentPrice  / 100;
+    const weeklyWarCost = litresPerWeek * (currentPrice - preWarPrice) / 100;
     const exciseSavingWeekly = litresPerWeek * exciseSaving / 100;
 
     document.getElementById('calcResults').innerHTML = `
@@ -595,29 +626,36 @@ function initCalculator(data) {
       </div>
       <div class="calc-result-row">
         <span class="label">Weekly cost (current price)</span>
-        <span class="value">$${weeklyCostCurrent.toFixed(2)}</span>
+        <span class="value">$${weeklyCost.toFixed(2)}</span>
       </div>
       <div class="calc-result-row">
         <span class="label">Monthly cost</span>
-        <span class="value">$${(weeklyCostCurrent * 52 / 12).toFixed(2)}</span>
+        <span class="value">$${(weeklyCost * 52 / 12).toFixed(2)}</span>
       </div>
       <hr class="calc-divider" />
       <div class="calc-result-row">
         <span class="label">Extra cost vs pre-war prices</span>
-        <span class="value up" style="color:#fca5a5">+$${weeklyWarCost.toFixed(2)}/wk</span>
+        <span class="value" style="color:#fca5a5">+$${weeklyWarCost.toFixed(2)}/wk</span>
       </div>
-      ${!exciseCut ? `
       <div class="calc-result-row">
-        <span class="label">Saving from excise cut (Apr 1)</span>
+        <span class="label">${exciseCut ? 'Excise cut saving (active)' : 'Saving from excise cut (Apr 1)'}</span>
         <span class="value saving">−$${exciseSavingWeekly.toFixed(2)}/wk</span>
-      </div>` : `
-      <div class="calc-result-row">
-        <span class="label">Excise cut saving (active)</span>
-        <span class="value saving">−$${exciseSavingWeekly.toFixed(2)}/wk</span>
-      </div>`}
+      </div>
     `;
   }
 
+  function setFuel(type) {
+    fuelType = type;
+    const pBtn = document.getElementById('btnPetrol');
+    const dBtn = document.getElementById('btnDiesel');
+    pBtn.className = 'fuel-btn' + (type === 'petrol' ? ' active-petrol' : '');
+    dBtn.className = 'fuel-btn' + (type === 'diesel' ? ' active-diesel' : '');
+    document.getElementById('calcEff').value = type === 'diesel' ? '8' : '10';
+    update();
+  }
+
+  document.getElementById('btnPetrol').addEventListener('click', () => setFuel('petrol'));
+  document.getElementById('btnDiesel').addEventListener('click', () => setFuel('diesel'));
   document.getElementById('calcKm').addEventListener('input', update);
   document.getElementById('calcEff').addEventListener('input', update);
   update();
