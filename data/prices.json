@@ -4,36 +4,145 @@
   "exciseCutDate": "2026-04-01",
   "exciseFullCpl": 52.6,
   "exciseHalvedCpl": 26.3,
-
   "series": [
-    { "date": "2026-02-24", "petrol": 176, "diesel": 220, "brent_usd": 84, "note": "Pre-war baseline" },
-    { "date": "2026-02-26", "petrol": 178, "diesel": 222, "brent_usd": 86 },
-    { "date": "2026-02-28", "petrol": 188, "diesel": 233, "brent_usd": 96, "note": "Iran war begins — immediate price shock" },
-    { "date": "2026-03-02", "petrol": 199, "diesel": 246, "brent_usd": 100 },
-    { "date": "2026-03-05", "petrol": 210, "diesel": 259, "brent_usd": 106 },
-    { "date": "2026-03-08", "petrol": 219, "diesel": 268, "brent_usd": 110, "note": "National avg tops 200 cpl for first time" },
-    { "date": "2026-03-11", "petrol": 226, "diesel": 276, "brent_usd": 113 },
-    { "date": "2026-03-14", "petrol": 233, "diesel": 283, "brent_usd": 115 },
-    { "date": "2026-03-17", "petrol": 238, "diesel": 290, "brent_usd": 116 },
-    { "date": "2026-03-20", "petrol": 243, "diesel": 298, "brent_usd": 117 },
-    { "date": "2026-03-23", "petrol": 247, "diesel": 306, "brent_usd": 118 },
-    { "date": "2026-03-25", "petrol": 250, "diesel": 311, "brent_usd": 118, "note": "Govt announces excise halving from April 1" },
-    { "date": "2026-03-27", "petrol": 251, "diesel": 314, "brent_usd": 119 },
-    { "date": "2026-03-29", "petrol": 252, "diesel": 317, "brent_usd": 119 },
-    { "date": "2026-03-31", "petrol": 251, "diesel": 318, "brent_usd": 119, "note": "Excise cut takes effect tomorrow" }
+    {
+      "date": "2026-02-24",
+      "petrol": 176,
+      "diesel": 220,
+      "brent_usd": 84,
+      "note": "Pre-war baseline"
+    },
+    {
+      "date": "2026-02-26",
+      "petrol": 178,
+      "diesel": 222,
+      "brent_usd": 86
+    },
+    {
+      "date": "2026-02-28",
+      "petrol": 188,
+      "diesel": 233,
+      "brent_usd": 96,
+      "note": "Iran war begins \u2014 immediate price shock"
+    },
+    {
+      "date": "2026-03-02",
+      "petrol": 199,
+      "diesel": 246,
+      "brent_usd": 100
+    },
+    {
+      "date": "2026-03-05",
+      "petrol": 210,
+      "diesel": 259,
+      "brent_usd": 106
+    },
+    {
+      "date": "2026-03-08",
+      "petrol": 219,
+      "diesel": 268,
+      "brent_usd": 110,
+      "note": "National avg tops 200 cpl for first time"
+    },
+    {
+      "date": "2026-03-11",
+      "petrol": 226,
+      "diesel": 276,
+      "brent_usd": 113
+    },
+    {
+      "date": "2026-03-14",
+      "petrol": 233,
+      "diesel": 283,
+      "brent_usd": 115
+    },
+    {
+      "date": "2026-03-17",
+      "petrol": 238,
+      "diesel": 290,
+      "brent_usd": 116
+    },
+    {
+      "date": "2026-03-20",
+      "petrol": 243,
+      "diesel": 298,
+      "brent_usd": 117
+    },
+    {
+      "date": "2026-03-23",
+      "petrol": 247,
+      "diesel": 306,
+      "brent_usd": 118
+    },
+    {
+      "date": "2026-03-25",
+      "petrol": 250,
+      "diesel": 311,
+      "brent_usd": 118,
+      "note": "Govt announces excise halving from April 1"
+    },
+    {
+      "date": "2026-03-27",
+      "petrol": 251,
+      "diesel": 314,
+      "brent_usd": 119
+    },
+    {
+      "date": "2026-03-29",
+      "petrol": 252,
+      "diesel": 317,
+      "brent_usd": 119
+    },
+    {
+      "date": "2026-03-31",
+      "petrol": 253,
+      "diesel": 317,
+      "brent_usd": 108.8,
+      "note": "Federal government announced halving of fuel excise by 26.3 cpl for three months effective 1 April 2026, following National Cabinet meeting on 30 March amid Middle East conflict-driven price surge.",
+      "sources": [
+        "ACCC Weekly Fuel Price Monitoring (27 Mar 2026)",
+        "AIP Weekly Petrol Prices Report (w/e 29 Mar 2026)",
+        "CarExpert / IBTimes AU (29 Mar 2026)",
+        "Petrolmate (live aggregator)",
+        "NRMA (NSW fuel update)",
+        "Investing.com / CNBC (Brent crude)"
+      ]
+    }
   ],
-
   "states": {
-    "NSW": { "petrol": 251, "diesel": 318 },
-    "VIC": { "petrol": 247, "diesel": 313 },
-    "QLD": { "petrol": 255, "diesel": 321 },
-    "WA":  { "petrol": 260, "diesel": 329 },
-    "SA":  { "petrol": 249, "diesel": 316 },
-    "TAS": { "petrol": 265, "diesel": 336 },
-    "NT":  { "petrol": 279, "diesel": 354 },
-    "ACT": { "petrol": 244, "diesel": 309 }
+    "NSW": {
+      "petrol": 258,
+      "diesel": 323
+    },
+    "VIC": {
+      "petrol": 254,
+      "diesel": 316
+    },
+    "QLD": {
+      "petrol": 250,
+      "diesel": 314
+    },
+    "WA": {
+      "petrol": 249,
+      "diesel": 300
+    },
+    "SA": {
+      "petrol": 253,
+      "diesel": 312
+    },
+    "TAS": {
+      "petrol": 257,
+      "diesel": 312
+    },
+    "NT": {
+      "petrol": 274,
+      "diesel": 325
+    },
+    "ACT": {
+      "petrol": 258,
+      "diesel": 306
+    }
   },
-
   "timeline": [
     {
       "date": "2026-02-24",
@@ -42,7 +151,7 @@
     },
     {
       "date": "2026-02-28",
-      "event": "Iran launches coordinated strikes — war officially begins; Hormuz threatened",
+      "event": "Iran launches coordinated strikes \u2014 war officially begins; Hormuz threatened",
       "type": "war"
     },
     {
@@ -52,7 +161,7 @@
     },
     {
       "date": "2026-03-01",
-      "event": "Australian bowser prices jump 10–12 cpl overnight at major city stations",
+      "event": "Australian bowser prices jump 10\u201312 cpl overnight at major city stations",
       "type": "fuel"
     },
     {
@@ -77,7 +186,7 @@
     },
     {
       "date": "2026-03-13",
-      "event": "Brent crude hits USD $112/bbl — highest since mid-2022 energy crisis",
+      "event": "Brent crude hits USD $112/bbl \u2014 highest since mid-2022 energy crisis",
       "type": "oil"
     },
     {
@@ -97,12 +206,12 @@
     },
     {
       "date": "2026-03-23",
-      "event": "Diesel national average tops 300 cpl — trucking industry warns of supply chain impact",
+      "event": "Diesel national average tops 300 cpl \u2014 trucking industry warns of supply chain impact",
       "type": "fuel"
     },
     {
       "date": "2026-03-25",
-      "event": "Federal government announces fuel excise halved (52.6 → 26.3 cpl) effective April 1",
+      "event": "Federal government announces fuel excise halved (52.6 \u2192 26.3 cpl) effective April 1",
       "type": "policy"
     },
     {
@@ -112,11 +221,10 @@
     },
     {
       "date": "2026-04-01",
-      "event": "Fuel excise halved — consumers to see ~26 cpl relief at the pump",
+      "event": "Fuel excise halved \u2014 consumers to see ~26 cpl relief at the pump",
       "type": "policy"
     }
   ],
-
   "consumption": {
     "petrolDailyMLitres": 58,
     "dieselDailyMLitres": 91.8
