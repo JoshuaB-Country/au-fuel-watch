@@ -223,6 +223,11 @@
       "date": "2026-04-01",
       "event": "Fuel excise halved \u2014 consumers to see ~26 cpl relief at the pump",
       "type": "policy"
+    },
+    {
+      "date": "2026-04-02",
+      "event": "Brent crude pulls back from $119 peak amid preliminary ceasefire signals; market cautious",
+      "type": "oil"
     }
   ],
   "consumption": {

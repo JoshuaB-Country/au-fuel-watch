@@ -91,6 +91,9 @@ SECONDARY (use if primary sources lack today's data or for state breakdown):
 4. State/territory breakdown for all 8 jurisdictions
 5. Any significant fuel price event today (price spike, policy change, etc.)
 6. Which sources you used and whether they agreed
+7. Any notable events today worth adding to the war/oil/fuel/policy timeline
+   (0–3 events max — only include genuinely significant developments, not
+   routine price moves)
 
 ━━━ OUTPUT FORMAT ━━━
 
@@ -105,6 +108,13 @@ trailing commas. Use this exact schema:
   "note": "<one sentence about a significant price event today, or null>",
   "sources": ["<source name 1>", "<source name 2>"],
   "confidence": "high | medium | low",
+  "timeline_events": [
+    {{
+      "date": "{TODAY}",
+      "event": "<one sentence describing the event>",
+      "type": "war | oil | fuel | policy"
+    }}
+  ],
   "states": {{
     "NSW": {{"petrol": <int>, "diesel": <int>}},
     "VIC": {{"petrol": <int>, "diesel": <int>}},
@@ -263,6 +273,28 @@ def update_data_file(entry: dict) -> None:
     if "states" in entry and isinstance(entry["states"], dict):
         data["states"] = entry["states"]
         print("  Updated state prices")
+
+    # Merge new timeline events (deduplicate by date + first 60 chars of event text)
+    new_events = entry.get("timeline_events", [])
+    if new_events:
+        existing = data.get("timeline", [])
+        existing_keys = {
+            (e["date"], e["event"][:60].lower()) for e in existing
+        }
+        added = 0
+        for ev in new_events:
+            if not all(k in ev for k in ("date", "event", "type")):
+                continue
+            if ev["type"] not in ("war", "oil", "fuel", "policy"):
+                continue
+            key = (ev["date"], ev["event"][:60].lower())
+            if key not in existing_keys:
+                existing.append(ev)
+                existing_keys.add(key)
+                added += 1
+        if added:
+            data["timeline"] = sorted(existing, key=lambda e: e["date"])
+            print(f"  Added {added} timeline event(s)")
 
     data["lastUpdated"] = TODAY
 
