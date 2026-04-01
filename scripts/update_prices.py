@@ -14,14 +14,18 @@ Source hierarchy (most → least authoritative):
 import json
 import re
 import sys
-from datetime import date
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import anthropic
 
 SCRIPT_DIR = Path(__file__).parent
 DATA_FILE  = SCRIPT_DIR.parent / "data" / "prices.json"
-TODAY      = date.today().isoformat()
+
+# Always use AEST (UTC+10) so the date matches what Australians see,
+# regardless of what UTC time the GitHub Actions runner thinks it is.
+AEST = timezone(timedelta(hours=10))
+TODAY = datetime.now(AEST).strftime("%Y-%m-%d")
 
 
 def load_previous_prices() -> dict | None:
