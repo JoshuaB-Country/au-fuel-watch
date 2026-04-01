@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-03-31",
+  "lastUpdated": "2026-04-02",
   "warStartDate": "2026-02-28",
   "exciseCutDate": "2026-04-01",
   "exciseFullCpl": 52.6,
@@ -107,40 +107,54 @@
         "NRMA (NSW fuel update)",
         "Investing.com / CNBC (Brent crude)"
       ]
+    },
+    {
+      "date": "2026-04-02",
+      "petrol": 248,
+      "diesel": 312,
+      "brent_usd": 101.0,
+      "note": "Fuel excise halved from 52.6 to 26.3 cpl on 1 April but most bowser stock still taxed at old rate; only partial pass-through on day 2, combined with Brent sliding toward $101 on Strait of Hormuz de-escalation hopes.",
+      "sources": [
+        "AIP Weekly Petrol Prices Report (week ending 29 Mar 2026, published 30 Mar)",
+        "ACCC Weekly Fuel Price Monitoring Report (27 Mar 2026)",
+        "NRMA Weekly Fuel Report (31 Mar 2026)",
+        "CarExpert / TorqueCafe (1 Apr 2026)",
+        "Investing.com / CNBC Brent crude (1 Apr 2026)"
+      ]
     }
   ],
   "states": {
     "NSW": {
-      "petrol": 258,
-      "diesel": 323
-    },
-    "VIC": {
-      "petrol": 254,
-      "diesel": 316
-    },
-    "QLD": {
-      "petrol": 250,
+      "petrol": 248,
       "diesel": 314
     },
+    "VIC": {
+      "petrol": 248,
+      "diesel": 313
+    },
+    "QLD": {
+      "petrol": 247,
+      "diesel": 312
+    },
     "WA": {
-      "petrol": 249,
-      "diesel": 300
+      "petrol": 250,
+      "diesel": 311
     },
     "SA": {
-      "petrol": 253,
-      "diesel": 312
+      "petrol": 249,
+      "diesel": 311
     },
     "TAS": {
-      "petrol": 257,
-      "diesel": 312
+      "petrol": 250,
+      "diesel": 313
     },
     "NT": {
-      "petrol": 274,
-      "diesel": 325
+      "petrol": 259,
+      "diesel": 314
     },
     "ACT": {
-      "petrol": 258,
-      "diesel": 306
+      "petrol": 247,
+      "diesel": 313
     }
   },
   "timeline": [
@@ -220,8 +234,23 @@
       "type": "oil"
     },
     {
+      "date": "2026-03-28",
+      "event": "Treasury Laws Amendment (Doubling Penalties for ACCC Enforcement) Bill 2026 passed, raising maximum fines for fuel-sector misconduct to $100 million per offence.",
+      "type": "policy"
+    },
+    {
+      "date": "2026-03-31",
+      "event": "Surprise joint communiqu\u00e9 signals provisional maritime security agreement to reopen the Strait of Hormuz; Brent crude drops ~$20 from peak toward $101/bbl.",
+      "type": "war"
+    },
+    {
       "date": "2026-04-01",
       "event": "Fuel excise halved \u2014 consumers to see ~26 cpl relief at the pump",
+      "type": "policy"
+    },
+    {
+      "date": "2026-04-01",
+      "event": "Australian fuel excise halved from 52.6 to 26.3 cpl for three months (1 Apr \u2013 30 Jun) following National Cabinet decision on 30 March.",
       "type": "policy"
     },
     {
