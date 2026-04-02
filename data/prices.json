@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-02",
+  "lastUpdated": "2026-04-03",
   "warStartDate": "2026-02-28",
   "exciseCutDate": "2026-04-01",
   "exciseFullCpl": 52.6,
@@ -121,40 +121,53 @@
         "CarExpert / TorqueCafe (1 Apr 2026)",
         "Investing.com / CNBC Brent crude (1 Apr 2026)"
       ]
+    },
+    {
+      "date": "2026-04-03",
+      "petrol": 246,
+      "diesel": 310,
+      "brent_usd": 109.0,
+      "note": "Fuel excise cut (26.3 cpl) continuing to flow through to bowsers but offset by Brent crude surging 8% on April 2 after Trump's national address signalled prolonged Iran conflict; ACCC warns retailers to pass on full savings.",
+      "sources": [
+        "ACCC weekly fuel price monitoring (April 3 2026 media release)",
+        "AIP/MotorMouth weekly petrol prices",
+        "NRMA weekly fuel report",
+        "OilPrice.com / CNBC (Brent crude)"
+      ]
     }
   ],
   "states": {
     "NSW": {
-      "petrol": 248,
-      "diesel": 314
-    },
-    "VIC": {
-      "petrol": 248,
-      "diesel": 313
-    },
-    "QLD": {
-      "petrol": 247,
+      "petrol": 244,
       "diesel": 312
     },
+    "VIC": {
+      "petrol": 243,
+      "diesel": 308
+    },
+    "QLD": {
+      "petrol": 243,
+      "diesel": 307
+    },
     "WA": {
-      "petrol": 250,
-      "diesel": 311
+      "petrol": 249,
+      "diesel": 306
     },
     "SA": {
-      "petrol": 249,
-      "diesel": 311
+      "petrol": 244,
+      "diesel": 309
     },
     "TAS": {
-      "petrol": 250,
-      "diesel": 313
+      "petrol": 248,
+      "diesel": 316
     },
     "NT": {
-      "petrol": 259,
+      "petrol": 236,
       "diesel": 314
     },
     "ACT": {
-      "petrol": 247,
-      "diesel": 313
+      "petrol": 244,
+      "diesel": 315
     }
   },
   "timeline": [
@@ -257,6 +270,21 @@
       "date": "2026-04-02",
       "event": "Brent crude pulls back from $119 peak amid preliminary ceasefire signals; market cautious",
       "type": "oil"
+    },
+    {
+      "date": "2026-04-02",
+      "event": "Brent crude surges 8% to settle at USD 109.03 after Trump national address warns of further military action against Iran over next two to three weeks",
+      "type": "oil"
+    },
+    {
+      "date": "2026-04-02",
+      "event": "Dated Brent (physical oil) surges above USD 141 \u2014 highest since 2008 \u2014 as Strait of Hormuz disruption intensifies",
+      "type": "war"
+    },
+    {
+      "date": "2026-04-03",
+      "event": "ACCC issues substantiation notices to regional fuel distributors over sizable fuel surcharges and warns of enforcement action against retailers not passing on excise cut",
+      "type": "policy"
     }
   ],
   "consumption": {
