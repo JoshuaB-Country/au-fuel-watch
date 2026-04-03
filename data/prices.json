@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-03",
+  "lastUpdated": "2026-04-04",
   "warStartDate": "2026-02-28",
   "exciseCutDate": "2026-04-01",
   "exciseFullCpl": 52.6,
@@ -134,40 +134,54 @@
         "NRMA weekly fuel report",
         "OilPrice.com / CNBC (Brent crude)"
       ]
+    },
+    {
+      "date": "2026-04-04",
+      "petrol": 245,
+      "diesel": 309,
+      "brent_usd": 109.2,
+      "note": "ACCC confirms additional 5.7 cpl excise reduction agreed by states/territories on top of the 26.3 cpl federal cut; total 32 cpl relief now being passed through unevenly at the pump.",
+      "sources": [
+        "ACCC",
+        "AIP/MotorMouth",
+        "NRMA",
+        "FuelWatch WA",
+        "Fortune/Investing.com"
+      ]
     }
   ],
   "states": {
     "NSW": {
-      "petrol": 244,
-      "diesel": 312
+      "petrol": 241,
+      "diesel": 314
     },
     "VIC": {
       "petrol": 243,
-      "diesel": 308
+      "diesel": 310
     },
     "QLD": {
-      "petrol": 243,
-      "diesel": 307
-    },
-    "WA": {
-      "petrol": 249,
+      "petrol": 240,
       "diesel": 306
     },
-    "SA": {
+    "WA": {
       "petrol": 244,
-      "diesel": 309
+      "diesel": 305
+    },
+    "SA": {
+      "petrol": 242,
+      "diesel": 307
     },
     "TAS": {
-      "petrol": 248,
-      "diesel": 316
+      "petrol": 252,
+      "diesel": 315
     },
     "NT": {
-      "petrol": 236,
-      "diesel": 314
+      "petrol": 258,
+      "diesel": 320
     },
     "ACT": {
-      "petrol": 244,
-      "diesel": 315
+      "petrol": 243,
+      "diesel": 312
     }
   },
   "timeline": [
@@ -282,8 +296,23 @@
       "type": "war"
     },
     {
+      "date": "2026-04-02",
+      "event": "Brent crude spot price for physical cargoes hit $141.36 (highest since 2008) while futures closed at $109.03, revealing extreme physical market tightness from Strait of Hormuz closure.",
+      "type": "oil"
+    },
+    {
+      "date": "2026-04-02",
+      "event": "President Trump signalled weeks more of Iran conflict with no plan to reopen Strait of Hormuz, sending WTI above $111 and inverting the WTI-Brent spread.",
+      "type": "war"
+    },
+    {
       "date": "2026-04-03",
       "event": "ACCC issues substantiation notices to regional fuel distributors over sizable fuel surcharges and warns of enforcement action against retailers not passing on excise cut",
+      "type": "policy"
+    },
+    {
+      "date": "2026-04-03",
+      "event": "ACCC issues substantiation notices to fuel distributors over excessive surcharges in regional Australia, and confirms states/territories agreed to an additional 5.7 cpl excise reduction (total 32 cpl).",
       "type": "policy"
     }
   ],
