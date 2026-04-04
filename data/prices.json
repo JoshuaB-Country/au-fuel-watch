@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-04",
+  "lastUpdated": "2026-04-05",
   "warStartDate": "2026-02-28",
   "exciseCutDate": "2026-04-01",
   "exciseFullCpl": 52.6,
@@ -148,40 +148,54 @@
         "FuelWatch WA",
         "Fortune/Investing.com"
       ]
+    },
+    {
+      "date": "2026-04-05",
+      "petrol": 244,
+      "diesel": 310,
+      "brent_usd": 109.0,
+      "note": "Prices stabilising five days after the 26.3 cpl fuel excise cut, but Brent crude surged past $112 on April 3 as the Strait of Hormuz remained effectively closed by Iran; Easter long weekend may delay further pass-through.",
+      "sources": [
+        "Petrolmate (live aggregator of 13,366 stations via government APIs)",
+        "ACCC weekly fuel price monitoring (27 Mar + 3 Apr excise update)",
+        "IBTimes AU (early April 4 capital city data)",
+        "FuelPrice.io / FuelWatch WA (Perth daily prices)",
+        "Oilprice.com / Fortune (Brent crude)"
+      ]
     }
   ],
   "states": {
     "NSW": {
-      "petrol": 241,
-      "diesel": 314
+      "petrol": 236,
+      "diesel": 315
     },
     "VIC": {
-      "petrol": 243,
-      "diesel": 310
+      "petrol": 233,
+      "diesel": 308
     },
     "QLD": {
-      "petrol": 240,
+      "petrol": 237,
       "diesel": 306
     },
     "WA": {
-      "petrol": 244,
-      "diesel": 305
+      "petrol": 220,
+      "diesel": 298
     },
     "SA": {
-      "petrol": 242,
-      "diesel": 307
+      "petrol": 232,
+      "diesel": 312
     },
     "TAS": {
-      "petrol": 252,
-      "diesel": 315
+      "petrol": 245,
+      "diesel": 318
     },
     "NT": {
-      "petrol": 258,
+      "petrol": 266,
       "diesel": 320
     },
     "ACT": {
-      "petrol": 243,
-      "diesel": 312
+      "petrol": 225,
+      "diesel": 306
     }
   },
   "timeline": [
@@ -306,6 +320,11 @@
       "type": "war"
     },
     {
+      "date": "2026-04-02",
+      "event": "President Trump pledged more aggressive military action against Iran in the next 2-3 weeks, sending WTI crude up 11.4% in a single session.",
+      "type": "war"
+    },
+    {
       "date": "2026-04-03",
       "event": "ACCC issues substantiation notices to regional fuel distributors over sizable fuel surcharges and warns of enforcement action against retailers not passing on excise cut",
       "type": "policy"
@@ -314,6 +333,16 @@
       "date": "2026-04-03",
       "event": "ACCC issues substantiation notices to fuel distributors over excessive surcharges in regional Australia, and confirms states/territories agreed to an additional 5.7 cpl excise reduction (total 32 cpl).",
       "type": "policy"
+    },
+    {
+      "date": "2026-04-03",
+      "event": "Dated Brent physical oil price surged above USD 141 per barrel, the highest since 2008, as the Strait of Hormuz remained closed due to the US-Iran war.",
+      "type": "oil"
+    },
+    {
+      "date": "2026-04-03",
+      "event": "ACCC confirmed excise cut has reduced five-city average petrol by 16.7 cpl and diesel by 15.0 cpl since April 1, but warned full 26.3 cpl pass-through will take 1-2 weeks.",
+      "type": "fuel"
     }
   ],
   "consumption": {
