@@ -53,67 +53,28 @@ than 25 cpl in a single day is unusual — if you find such a move, note it and
 double-check with a second source before accepting it.
 """
 
-    system = """\
-You are a precise data-extraction assistant specialising in Australian fuel prices.
-Search the web methodically, cross-reference at least two independent sources,
-and return only verified data as a strict JSON object.
-Round all prices to the nearest integer cent per litre (cpl)."""
+    system = "You are a data-extraction assistant. Search the web, confirm prices from 2 sources, return strict JSON only. Round fuel prices to nearest integer cent per litre."
 
     user = f"""\
-Today is {TODAY}. Fetch the latest Australian average retail fuel prices.
+Date: {TODAY}. Fetch Australian average retail fuel prices + Brent crude.
 {prev_context}
-━━━ SEARCH INSTRUCTIONS ━━━
+SOURCES — check in order, stop once 2 agree:
+1. https://aip.com.au/industry-resources/weekly-prices (AIP — most authoritative)
+2. https://www.accc.gov.au/consumers/petrol-price-cycles/petrol-prices-and-your-local-area (ACCC)
+3. https://www.motormouth.com.au (live fallback)
+4. https://www.marketwatch.com/investing/future/brent%20crude (Brent price)
 
-Work through these sources in order. Stop when you have confirmed national
-averages from at least TWO independent sources:
-
-PRIMARY (most authoritative — check these first):
-  • AIP weekly retail prices:
-    https://aip.com.au/industry-resources/weekly-prices
-  • ACCC weekly petrol monitoring report:
-    https://www.accc.gov.au/consumers/petrol-price-cycles/petrol-prices-and-your-local-area
-  • FuelWatch WA (government-run, daily):
-    https://www.fuelwatch.wa.gov.au
-
-SECONDARY (use if primary sources lack today's data or for state breakdown):
-  • MotorMouth live aggregator:   https://www.motormouth.com.au
-  • NRMA (NSW/ACT prices):        https://www.mynrma.com.au/membership/my-nrma-app/fuel-prices
-  • RACQ (QLD prices):            https://www.racq.com.au/cars-and-driving/driving/fuel-and-oil/fuel-prices
-  • RAA (SA prices):              https://www.raa.com.au/travel/fuel-prices
-  • Petrol Spy:                   https://petrolspy.com.au
-
-━━━ WHAT TO FIND ━━━
-
-1. National average ULP91 (regular unleaded petrol) — cents per litre
-2. National average ULS diesel — cents per litre
-3. Brent crude spot price — USD per barrel (from Reuters, Bloomberg, or
-   MarketWatch: https://www.marketwatch.com/investing/future/brent%20crude)
-4. State/territory breakdown for all 8 jurisdictions
-5. Any significant fuel price event today (price spike, policy change, etc.)
-6. Which sources you used and whether they agreed
-7. Any notable events today worth adding to the war/oil/fuel/policy timeline
-   (0–3 events max — only include genuinely significant developments, not
-   routine price moves)
-
-━━━ OUTPUT FORMAT ━━━
-
-Return ONLY a valid JSON object. No markdown fences, no explanation, no
-trailing commas. Use this exact schema:
-
+Return ONLY this JSON (no markdown, no prose):
 {{
   "date": "{TODAY}",
-  "petrol": <integer cpl — national average ULP91>,
-  "diesel": <integer cpl — national average ULS diesel>,
-  "brent_usd": <number — Brent crude spot price in USD per barrel, one decimal place>,
-  "note": "<one sentence about a significant price event today, or null>",
-  "sources": ["<source name 1>", "<source name 2>"],
-  "confidence": "high | medium | low",
+  "petrol": <int cpl, national avg ULP91>,
+  "diesel": <int cpl, national avg ULS diesel>,
+  "brent_usd": <float, USD/barrel, 1 decimal>,
+  "note": "<one sentence on a significant price event today, or null>",
+  "sources": ["<src1>", "<src2>"],
+  "confidence": "high|medium|low",
   "timeline_events": [
-    {{
-      "date": "{TODAY}",
-      "event": "<one sentence describing the event>",
-      "type": "war | oil | fuel | policy"
-    }}
+    {{"date": "{TODAY}", "event": "<significant war/oil/fuel/policy event only>", "type": "war|oil|fuel|policy"}}
   ],
   "states": {{
     "NSW": {{"petrol": <int>, "diesel": <int>}},
@@ -153,15 +114,15 @@ def run_claude_with_search(system: str, user: str) -> dict:
     client   = anthropic.Anthropic()
     messages = [{"role": "user", "content": user}]
 
-    for iteration in range(12):
+    for iteration in range(6):
         response = client.messages.create(
-            model="claude-opus-4-6",
-            max_tokens=4096,
+            model="claude-haiku-4-6",   # ~20x cheaper than Opus; sufficient for structured extraction
+            max_tokens=800,             # JSON output is ~400 tokens — 800 is ample headroom
             system=system,
             tools=[{
                 "type": "web_search_20250305",
                 "name": "web_search",
-                "max_uses": 10,
+                "max_uses": 4,          # 2 primary + 1 state breakdown + 1 Brent = 4 max
             }],
             messages=messages,
         )
