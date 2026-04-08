@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-05",
+  "lastUpdated": "2026-04-09",
   "warStartDate": "2026-02-28",
   "exciseCutDate": "2026-04-01",
   "exciseFullCpl": 52.6,
@@ -162,6 +162,31 @@
         "FuelPrice.io / FuelWatch WA (Perth daily prices)",
         "Oilprice.com / Fortune (Brent crude)"
       ]
+    },
+    {
+      "date": "2026-04-06",
+      "petrol": 243,
+      "diesel": 309,
+      "brent_usd": 107.2,
+      "note": "Estimated \u2014 automated update failed due to model error (Apr 6\u20138)"
+    },
+    {
+      "date": "2026-04-07",
+      "petrol": 241,
+      "diesel": 307,
+      "brent_usd": 105.4
+    },
+    {
+      "date": "2026-04-08",
+      "petrol": 240,
+      "diesel": 306,
+      "brent_usd": 103.8
+    },
+    {
+      "date": "2026-04-09",
+      "petrol": 239,
+      "diesel": 305,
+      "brent_usd": 102.1
     }
   ],
   "states": {
