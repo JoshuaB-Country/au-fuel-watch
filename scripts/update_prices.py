@@ -116,7 +116,7 @@ def run_claude_with_search(system: str, user: str) -> dict:
 
     for iteration in range(6):
         response = client.messages.create(
-            model="claude-haiku-4-6",   # ~20x cheaper than Opus; sufficient for structured extraction
+            model="claude-haiku-4-5",   # ~20x cheaper than Opus; sufficient for structured extraction
             max_tokens=800,             # JSON output is ~400 tokens — 800 is ample headroom
             system=system,
             tools=[{
